@@ -64,16 +64,13 @@ export default async function handler(req, res) {
   const { type, imageBase64, mediaType, url } = req.body
 
   try {
-    let messages
+    let parts = []
 
     if (type === 'image' && imageBase64) {
-      messages = [{
-        role: 'user',
-        content: [
-          { type: 'image', source: { type: 'base64', media_type: mediaType || 'image/png', data: imageBase64 } },
-          { type: 'text', text: PROMPT }
-        ]
-      }]
+      parts = [
+        { inline_data: { mime_type: mediaType || 'image/png', data: imageBase64 } },
+        { text: PROMPT }
+      ]
     } else if (type === 'url' && url) {
       // Fetch screenshot server-side
       const screenshotUrl = `https://s.wordpress.com/mshots/v1/${encodeURIComponent(url)}?w=1280&h=960`
@@ -90,35 +87,34 @@ export default async function handler(req, res) {
       }
 
       if (screenshotBase64) {
-        messages = [{
-          role: 'user',
-          content: [
-            { type: 'image', source: { type: 'base64', media_type: 'image/png', data: screenshotBase64 } },
-            { type: 'text', text: `Screenshot of: ${url}\n\n${PROMPT}` }
-          ]
-        }]
+        parts = [
+          { inline_data: { mime_type: 'image/png', data: screenshotBase64 } },
+          { text: `Screenshot of: ${url}\n\n${PROMPT}` }
+        ]
       } else {
-        messages = [{ role: 'user', content: `Analyze UI of: ${url}\n\n${PROMPT}` }]
+        parts = [{ text: `Analyze UI of this website: ${url}\n\n${PROMPT}` }]
       }
     } else {
       return res.status(400).json({ error: 'Invalid request.' })
     }
 
-    // Call Anthropic API directly with fetch (no SDK needed)
-    const response = await fetch('https://api.anthropic.com/v1/messages', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        'x-api-key': process.env.ANTHROPIC_API_KEY,
-        'anthropic-version': '2023-06-01'
-      },
-      body: JSON.stringify({ model: 'claude-sonnet-4-20250514', max_tokens: 2000, messages })
-    })
+    // Call Google Gemini API - FREE with generous limits!
+    const geminiRes = await fetch(
+      `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${process.env.GEMINI_API_KEY}`,
+      {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          contents: [{ parts }],
+          generationConfig: { maxOutputTokens: 2000, temperature: 0.4 }
+        })
+      }
+    )
 
-    const data = await response.json()
-    if (!response.ok) throw new Error(data.error?.message || `Anthropic error ${response.status}`)
+    const geminiData = await geminiRes.json()
+    if (!geminiRes.ok) throw new Error(geminiData.error?.message || `Gemini error ${geminiRes.status}`)
 
-    const text = data.content?.map(c => c.text || '').join('')
+    const text = geminiData.candidates?.[0]?.content?.parts?.[0]?.text || ''
 
     let parsed = null
     try {
