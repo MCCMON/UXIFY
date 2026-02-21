@@ -49,12 +49,11 @@ Respond ONLY with valid JSON in this exact structure:
   ]
 }
 \`\`\`
-Scores are 0-100. Severity: "error", "warning", "pass", "info".`
+Scores are 0-100. Severity: "error", "warning", "pass", "info". Be specific and detailed.`
 
 export default async function handler(req, res) {
   if (req.method !== 'POST') return res.status(405).json({ error: 'Method not allowed' })
 
-  // Verify user is logged in
   const token = req.headers.authorization?.replace('Bearer ', '')
   if (!token) return res.status(401).json({ error: 'Unauthorized. Please log in.' })
 
@@ -64,57 +63,54 @@ export default async function handler(req, res) {
   const { type, imageBase64, mediaType, url } = req.body
 
   try {
-    let parts = []
+    let userContent = []
 
     if (type === 'image' && imageBase64) {
-      parts = [
-        { inline_data: { mime_type: mediaType || 'image/png', data: imageBase64 } },
-        { text: PROMPT }
+      userContent = [
+        { type: 'image_url', image_url: { url: `data:${mediaType || 'image/png'};base64,${imageBase64}` } },
+        { type: 'text', text: PROMPT }
       ]
     } else if (type === 'url' && url) {
-      // Fetch screenshot server-side
-      const screenshotUrl = `https://s.wordpress.com/mshots/v1/${encodeURIComponent(url)}?w=1280&h=960`
       let screenshotBase64 = null
-
       try {
-        const imgRes = await fetch(screenshotUrl)
+        const imgRes = await fetch(`https://s.wordpress.com/mshots/v1/${encodeURIComponent(url)}?w=1280&h=960`)
         if (imgRes.ok) {
           const buffer = await imgRes.arrayBuffer()
           screenshotBase64 = Buffer.from(buffer).toString('base64')
         }
-      } catch (e) {
-        console.log('Screenshot failed, using text fallback')
-      }
+      } catch (e) {}
 
       if (screenshotBase64) {
-        parts = [
-          { inline_data: { mime_type: 'image/png', data: screenshotBase64 } },
-          { text: `Screenshot of: ${url}\n\n${PROMPT}` }
+        userContent = [
+          { type: 'image_url', image_url: { url: `data:image/png;base64,${screenshotBase64}` } },
+          { type: 'text', text: `Screenshot of: ${url}\n\n${PROMPT}` }
         ]
       } else {
-        parts = [{ text: `Analyze UI of this website: ${url}\n\n${PROMPT}` }]
+        userContent = [{ type: 'text', text: `Analyze UI of: ${url}\n\n${PROMPT}` }]
       }
     } else {
       return res.status(400).json({ error: 'Invalid request.' })
     }
 
-    // Call Google Gemini API - FREE with generous limits!
-    const geminiRes = await fetch(
-      `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=${process.env.GEMINI_API_KEY}`,
-      {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          contents: [{ parts }],
-          generationConfig: { maxOutputTokens: 2000, temperature: 0.4 }
-        })
-      }
-    )
+    // Groq API - FREE, fast, vision support
+    const groqRes = await fetch('https://api.groq.com/openai/v1/chat/completions', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${process.env.GROQ_API_KEY}`
+      },
+      body: JSON.stringify({
+        model: 'meta-llama/llama-4-scout-17b-16e-instruct',
+        max_tokens: 2000,
+        temperature: 0.4,
+        messages: [{ role: 'user', content: userContent }]
+      })
+    })
 
-    const geminiData = await geminiRes.json()
-    if (!geminiRes.ok) throw new Error(geminiData.error?.message || `Gemini error ${geminiRes.status}`)
+    const groqData = await groqRes.json()
+    if (!groqRes.ok) throw new Error(groqData.error?.message || `Groq error ${groqRes.status}`)
 
-    const text = geminiData.candidates?.[0]?.content?.parts?.[0]?.text || ''
+    const text = groqData.choices?.[0]?.message?.content || ''
 
     let parsed = null
     try {
