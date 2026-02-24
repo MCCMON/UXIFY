@@ -6,17 +6,17 @@ import AppMain from '../components/AppMain'
 export default function Home() {
   const [session, setSession] = useState(null)
   const [loading, setLoading] = useState(true)
+  const [showAuth, setShowAuth] = useState(false)
 
   useEffect(() => {
-    // Check for existing session on mount
     supabase.auth.getSession().then(({ data: { session } }) => {
       setSession(session)
       setLoading(false)
     })
 
-    // Listen for auth changes (login/logout)
     const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
       setSession(session)
+      if (session) setShowAuth(false)
     })
 
     return () => subscription.unsubscribe()
@@ -45,9 +45,16 @@ export default function Home() {
     )
   }
 
-  if (!session) {
-    return <AuthPage onAuth={(session) => setSession(session)} />
+  // Show auth modal overlay
+  if (showAuth && !session) {
+    return <AuthPage onAuth={(session) => { setSession(session); setShowAuth(false) }} onClose={() => setShowAuth(false)} />
   }
 
-  return <AppMain session={session} onSignOut={handleSignOut} />
+  return (
+    <AppMain
+      session={session}
+      onSignOut={handleSignOut}
+      onAuthRequired={() => setShowAuth(true)}
+    />
+  )
 }
