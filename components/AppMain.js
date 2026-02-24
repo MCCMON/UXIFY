@@ -30,6 +30,8 @@ const styles = `
   .nav-user { font-size:13px; color:var(--text-muted); background:rgba(13,26,74,0.5); border:1px solid var(--glass-border); padding:6px 14px; border-radius:100px; }
   .signout-btn { background:transparent; border:1px solid rgba(244,114,182,0.3); color:var(--accent-pink); padding:6px 14px; border-radius:100px; font-size:13px; cursor:pointer; font-family:'DM Sans',sans-serif; transition:all 0.2s; }
   .signout-btn:hover { background:rgba(244,114,182,0.1); }
+  .signin-nav-btn { background:linear-gradient(135deg,var(--blue-electric),var(--purple-bright)); color:white; border:none; padding:8px 20px; border-radius:100px; font-size:13px; font-weight:600; cursor:pointer; font-family:'DM Sans',sans-serif; box-shadow:0 4px 16px rgba(108,53,222,0.4); transition:all 0.2s; }
+  .signin-nav-btn:hover { transform:translateY(-1px); box-shadow:0 6px 20px rgba(108,53,222,0.55); }
   .hero { text-align:center; padding:64px 24px 48px; max-width:800px; margin:0 auto; }
   .hero-tag { display:inline-flex; align-items:center; gap:6px; background:linear-gradient(135deg,rgba(45,95,255,0.15),rgba(108,53,222,0.15)); border:1px solid rgba(108,53,222,0.35); padding:6px 16px; border-radius:100px; font-size:13px; color:var(--purple-light); margin-bottom:24px; animation:fadeUp 0.6s ease forwards; }
   .hero-tag::before { content:''; width:6px; height:6px; background:var(--purple-glow); border-radius:50%; box-shadow:0 0 8px var(--purple-glow); animation:blink 2s ease infinite; }
@@ -135,7 +137,7 @@ const STEPS = [
   'Generating recommendations...',
 ]
 
-export default function AppMain({ session, onSignOut }) {
+export default function AppMain({ session, onSignOut, onAuthRequired }) {
   const [tab, setTab] = useState('image')
   const [file, setFile] = useState(null)
   const [preview, setPreview] = useState(null)
@@ -225,8 +227,14 @@ export default function AppMain({ session, onSignOut }) {
               UX<span>IFY</span>
             </div>
             <div className="nav-right">
-              <div className="nav-user">👤 {userEmail}</div>
-              <button className="signout-btn" onClick={onSignOut}>Sign out</button>
+              {session ? (
+                <>
+                  <div className="nav-user">👤 {userEmail}</div>
+                  <button className="signout-btn" onClick={onSignOut}>Sign out</button>
+                </>
+              ) : (
+                <button className="signin-nav-btn" onClick={onAuthRequired}>Sign in</button>
+              )}
             </div>
           </nav>
 
@@ -289,8 +297,8 @@ export default function AppMain({ session, onSignOut }) {
                   </div>
                 )}
 
-                <button className="analyze-btn" onClick={analyze} disabled={(tab === 'image' && !file) || (tab === 'url' && !url.trim())}>
-                  ✦ Analyse UI with AI
+                <button className="analyze-btn" onClick={session ? analyze : onAuthRequired} disabled={(tab === 'image' && !file) || (tab === 'url' && !url.trim())}>
+                  ✦ {session ? 'Analyse UI with AI' : 'Sign in to Analyse'}
                 </button>
                 {error && <div className="error-card" style={{ marginTop: 16 }}>{error}</div>}
               </div>
