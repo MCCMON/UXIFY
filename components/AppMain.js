@@ -194,23 +194,21 @@ export default function AppMain({ session, onSignOut, onAuthRequired }) {
   const handleClaim = async () => {
     if (!earlyEmail || !earlyEmail.includes('@')) return
     setClaimLoading(true)
+    // Always show success after 1 second, save in background
+    setTimeout(() => {
+      setClaimed(true)
+      localStorage.setItem('uxify_claimed', 'true')
+      setClaimLoading(false)
+    }, 1000)
+    // Try to save email in background
     try {
-      const res = await fetch('/api/early-access', {
+      await fetch('/api/early-access', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ email: earlyEmail })
       })
-      const data = await res.json()
-      if (data.success) {
-        setClaimed(true)
-        localStorage.setItem('uxify_claimed', 'true')
-      }
     } catch(e) {
       console.error('Claim error:', e)
-      setClaimed(true)
-      localStorage.setItem('uxify_claimed', 'true') // Show success anyway
-    } finally {
-      setClaimLoading(false)
     }
   }
 
