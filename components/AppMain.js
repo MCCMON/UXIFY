@@ -184,32 +184,20 @@ export default function AppMain({ session, onSignOut, onAuthRequired }) {
   const [error, setError] = useState(null)
   const [barsAnimated, setBarsAnimated] = useState(false)
   const [earlyEmail, setEarlyEmail] = useState('')
-  const [claimed, setClaimed] = useState(() => {
-    if (typeof window !== 'undefined') return localStorage.getItem('uxify_claimed') === 'true'
-    return false
-  })
+  const [claimed, setClaimed] = useState(false)
   const [claimLoading, setClaimLoading] = useState(false)
   const fileRef = useRef()
 
   const handleClaim = async () => {
     if (!earlyEmail || !earlyEmail.includes('@')) return
     setClaimLoading(true)
-    // Always show success after 1 second, save in background
-    setTimeout(() => {
-      setClaimed(true)
-      localStorage.setItem('uxify_claimed', 'true')
-      setClaimLoading(false)
-    }, 1000)
-    // Try to save email in background
+    // Save to Supabase early_access table
     try {
-      await fetch('/api/early-access', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ email: earlyEmail })
-      })
-    } catch(e) {
-      console.error('Claim error:', e)
-    }
+      const { createClient } = await import('@supabase/supabase-js')
+      const sb = createClient(process.env.NEXT_PUBLIC_SUPABASE_URL, process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY)
+      await sb.from('early_access').insert([{ email: earlyEmail, created_at: new Date().toISOString() }])
+    } catch(e) { console.log('Supabase save:', e) }
+    setTimeout(() => { setClaimed(true); setClaimLoading(false) }, 800)
   }
 
   const handleFile = (f) => {
