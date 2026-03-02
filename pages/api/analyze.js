@@ -9,7 +9,14 @@ export const config = {
   api: { bodyParser: { sizeLimit: '10mb' } }
 }
 
-const PROMPT = `You are an expert UI/UX designer and accessibility analyst. Analyze this UI design thoroughly.
+const PROMPT = `You are an expert UI/UX designer and accessibility analyst. Analyze this UI design thoroughly and critically.
+
+IMPORTANT: Give HONEST, VARIED scores based on what you actually see. Do NOT default to scores around 75-80. 
+- A poorly designed UI should score 30-50
+- An average UI should score 50-70  
+- A good UI should score 70-85
+- An exceptional UI should score 85-95
+- Scores should DIFFER from each other based on actual strengths/weaknesses
 
 Respond ONLY with valid JSON in this exact structure:
 \`\`\`json
