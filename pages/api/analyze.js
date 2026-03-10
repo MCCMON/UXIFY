@@ -9,54 +9,63 @@ export const config = {
   api: { bodyParser: { sizeLimit: '10mb' } }
 }
 
-const PROMPT = `You are an expert UI/UX designer and accessibility analyst. Analyze this UI design thoroughly and critically.
+const PROMPT = `You are an expert conversion rate optimization (CRO) specialist and landing page analyst. Analyze this landing page thoroughly and critically.
 
-IMPORTANT: Give HONEST, VARIED scores based on what you actually see. Do NOT default to scores around 75-80. 
-- A poorly designed UI should score 30-50
-- An average UI should score 50-70  
-- A good UI should score 70-85
-- An exceptional UI should score 85-95
+IMPORTANT: Give HONEST, VARIED scores based on what you actually see.
+- A poor landing page should score 20-45
+- An average landing page should score 45-65
+- A good landing page should score 65-80
+- An exceptional landing page should score 80-95
 - Scores should DIFFER from each other based on actual strengths/weaknesses
 
 Respond ONLY with valid JSON in this exact structure:
 \`\`\`json
 {
-  "scores": { "overall": 82, "accessibility": 74, "design": 88, "ux": 79 },
-  "summary": "A 2-3 sentence overall assessment.",
-  "accessibility": [
-    {"severity": "error", "text": "Issue description"},
-    {"severity": "warning", "text": "Warning description"},
-    {"severity": "pass", "text": "Something done well"}
+  "scores": { "overall": 72, "headline": 68, "cta": 75, "trust": 65, "clarity": 78 },
+  "summary": "A 2-3 sentence honest assessment of this landing page's conversion potential.",
+  "firstimpression": [
+    {"severity": "error", "text": "What immediately hurts conversions"},
+    {"severity": "warning", "text": "What could be improved"},
+    {"severity": "pass", "text": "What is working well"}
   ],
-  "ux": [
-    {"severity": "warning", "text": "UX issue"},
-    {"severity": "pass", "text": "Good UX pattern"}
+  "cta_analysis": [
+    {"severity": "error", "text": "CTA problem"},
+    {"severity": "pass", "text": "CTA strength"}
   ],
-  "design": [
-    {"severity": "info", "text": "Design observation"},
-    {"severity": "pass", "text": "Design strength"}
+  "trust_signals": [
+    {"severity": "warning", "text": "Missing trust element"},
+    {"severity": "pass", "text": "Good trust signal found"}
   ],
-  "typography": {
-    "rating": 75, "hierarchy": 80, "readability": 70, "consistency": 78,
-    "notes": "Brief typography assessment"
+  "copy_analysis": [
+    {"severity": "error", "text": "Copy problem that hurts conversions"},
+    {"severity": "pass", "text": "Copy strength"}
+  ],
+  "improvements": [
+    {"priority": "high", "text": "Most important change to make right now"},
+    {"priority": "medium", "text": "Second most important change"},
+    {"priority": "low", "text": "Nice to have improvement"}
+  ],
+  "above_fold": {
+    "rating": 75, "headline_score": 70, "subheadline_score": 65, "visual_score": 80,
+    "notes": "Brief assessment of what visitors see in the first 5 seconds"
   },
   "colors": [
     {"hex": "#1a1a2e", "role": "Background"},
-    {"hex": "#3d5af1", "role": "Primary"},
+    {"hex": "#3d5af1", "role": "Primary CTA"},
     {"hex": "#f0f0f0", "role": "Text"},
     {"hex": "#22d3ee", "role": "Accent"},
-    {"hex": "#e879f9", "role": "Secondary"}
+    {"hex": "#e879f9", "role": "Highlight"}
   ],
-  "recommendations": [
-    {"label": "Visual Hierarchy", "score": 80},
-    {"label": "Color Contrast", "score": 65},
-    {"label": "Spacing & Layout", "score": 85},
-    {"label": "Interactive Elements", "score": 72},
-    {"label": "Mobile Responsiveness", "score": 68}
+  "quick_wins": [
+    {"label": "Headline Clarity", "score": 70},
+    {"label": "CTA Visibility", "score": 65},
+    {"label": "Social Proof", "score": 55},
+    {"label": "Value Proposition", "score": 75},
+    {"label": "Mobile Experience", "score": 68}
   ]
 }
 \`\`\`
-Scores are 0-100. Severity: "error", "warning", "pass", "info". Be specific and detailed.`
+Scores are 0-100. Severity: "error", "warning", "pass". Priority: "high", "medium", "low". Be specific and actionable.`
 
 export default async function handler(req, res) {
   if (req.method !== 'POST') return res.status(405).json({ error: 'Method not allowed' })
@@ -90,16 +99,15 @@ export default async function handler(req, res) {
       if (screenshotBase64) {
         userContent = [
           { type: 'image_url', image_url: { url: `data:image/png;base64,${screenshotBase64}` } },
-          { type: 'text', text: `Screenshot of: ${url}\n\n${PROMPT}` }
+          { type: 'text', text: `Landing page URL: ${url}\n\n${PROMPT}` }
         ]
       } else {
-        userContent = [{ type: 'text', text: `Analyze UI of: ${url}\n\n${PROMPT}` }]
+        userContent = [{ type: 'text', text: `Analyze landing page: ${url}\n\n${PROMPT}` }]
       }
     } else {
       return res.status(400).json({ error: 'Invalid request.' })
     }
 
-    // Groq API - FREE, fast, vision support
     const groqRes = await fetch('https://api.groq.com/openai/v1/chat/completions', {
       method: 'POST',
       headers: {
