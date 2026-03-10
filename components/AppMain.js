@@ -72,14 +72,6 @@ const styles = `
   .results-title { font-family:'Syne',sans-serif; font-size:22px; font-weight:800; }
   .new-analysis-btn { background:rgba(108,53,222,0.15); border:1px solid rgba(108,53,222,0.3); color:var(--purple-light); padding:8px 18px; border-radius:10px; cursor:pointer; font-size:14px; font-family:'DM Sans',sans-serif; transition:all 0.2s; }
   .new-analysis-btn:hover { background:rgba(108,53,222,0.25); }
-  .score-grid { display:grid; grid-template-columns:repeat(auto-fit,minmax(160px,1fr)); gap:12px; margin-bottom:24px; }
-  .score-card { background:var(--card-bg); border:1px solid var(--glass-border); border-radius:16px; padding:20px; text-align:center; backdrop-filter:blur(20px); }
-  .score-card.blue { border-color:rgba(45,95,255,0.3); }
-  .score-card.purple { border-color:rgba(108,53,222,0.3); }
-  .score-card.pink { border-color:rgba(244,114,182,0.3); }
-  .score-card.cyan { border-color:rgba(56,189,248,0.3); }
-  .score-val { font-family:'Syne',sans-serif; font-size:42px; font-weight:800; line-height:1; margin-bottom:4px; background:linear-gradient(135deg,var(--blue-electric),var(--purple-light)); -webkit-background-clip:text; -webkit-text-fill-color:transparent; background-clip:text; }
-  .score-label { font-size:12px; color:var(--text-muted); text-transform:uppercase; letter-spacing:0.5px; }
   .analysis-grid { display:grid; grid-template-columns:repeat(auto-fit,minmax(320px,1fr)); gap:16px; margin-bottom:24px; }
   .analysis-card { background:var(--card-bg); border:1px solid var(--glass-border); border-radius:16px; padding:20px; backdrop-filter:blur(20px); }
   .card-title { display:flex; align-items:center; gap:10px; font-family:'Syne',sans-serif; font-size:15px; font-weight:700; margin-bottom:16px; }
@@ -110,33 +102,7 @@ const styles = `
   .color-chip { display:flex; flex-direction:column; align-items:center; gap:4px; }
   .color-swatch { width:40px; height:40px; border-radius:10px; border:1px solid rgba(255,255,255,0.1); }
   .color-hex { font-size:11px; color:var(--text-muted); font-family:monospace; }
-  footer { text-align:center; padding:28px; color:var(--text-muted); font-size:13px; border-top:1px solid rgba(108,53,222,0.1); }
-  /* PAYWALL */
-  .paywall-overlay { position:relative; margin-top:16px; }
-  .blurred-section { filter:blur(6px); pointer-events:none; user-select:none; opacity:0.5; }
-  .paywall-card { position:relative; z-index:10; background:linear-gradient(135deg,rgba(10,15,46,0.97),rgba(26,10,62,0.97)); border:1px solid rgba(108,53,222,0.5); border-radius:24px; padding:48px 40px; text-align:center; margin-top:24px; backdrop-filter:blur(24px); box-shadow:0 0 80px rgba(108,53,222,0.2); animation:fadeUp 0.5s ease forwards; }
-  .paywall-badge { display:inline-flex; align-items:center; gap:6px; background:linear-gradient(135deg,rgba(244,114,182,0.2),rgba(108,53,222,0.2)); border:1px solid rgba(244,114,182,0.4); padding:6px 16px; border-radius:100px; font-size:13px; color:var(--accent-pink); margin-bottom:20px; font-weight:600; }
-  .paywall-title { font-family:'Syne',sans-serif; font-size:32px; font-weight:800; margin-bottom:12px; line-height:1.1; }
-  .paywall-title .highlight { background:linear-gradient(135deg,var(--accent-pink),var(--purple-light)); -webkit-background-clip:text; -webkit-text-fill-color:transparent; background-clip:text; }
-  .paywall-sub { font-size:16px; color:var(--text-secondary); margin-bottom:32px; line-height:1.6; max-width:460px; margin-left:auto; margin-right:auto; }
-  .price-tag { display:flex; align-items:center; justify-content:center; gap:12px; margin-bottom:28px; }
-  .price-old { font-size:22px; color:var(--text-muted); text-decoration:line-through; font-family:'Syne',sans-serif; }
-  .price-new { font-size:48px; font-weight:800; font-family:'Syne',sans-serif; background:linear-gradient(135deg,var(--accent-pink),var(--purple-light)); -webkit-background-clip:text; -webkit-text-fill-color:transparent; background-clip:text; }
-  .price-label { font-size:14px; color:var(--text-muted); }
-  .early-features { display:flex; justify-content:center; gap:24px; margin-bottom:32px; flex-wrap:wrap; }
-  .early-feature { font-size:13px; color:var(--text-secondary); display:flex; align-items:center; gap:6px; }
-  .early-feature::before { content:'✓'; color:#4ade80; font-weight:700; }
-  .email-capture { display:flex; gap:10px; max-width:460px; margin:0 auto 16px; }
-  .email-input { flex:1; background:rgba(13,26,74,0.6); border:1px solid var(--glass-border); border-radius:12px; padding:14px 18px; font-size:15px; color:var(--text-primary); font-family:'DM Sans',sans-serif; outline:none; transition:all 0.2s; }
-  .email-input::placeholder { color:var(--text-muted); }
-  .email-input:focus { border-color:rgba(108,53,222,0.6); }
-  .claim-btn { background:linear-gradient(135deg,var(--accent-pink),var(--purple-bright)); color:white; padding:14px 24px; border-radius:12px; font-size:15px; font-weight:700; cursor:pointer; border:none; font-family:'Syne',sans-serif; white-space:nowrap; transition:all 0.2s; }
-  .claim-btn:hover { transform:translateY(-1px); }
-  .claim-btn:disabled { opacity:0.7; cursor:not-allowed; transform:none; }
-  .spots-left { font-size:13px; color:var(--text-muted); }
-  .spots-left span { color:var(--accent-pink); font-weight:600; }
-  .claimed-msg { background:rgba(74,222,128,0.1); border:1px solid rgba(74,222,128,0.25); border-radius:12px; padding:16px; color:#86efac; font-size:15px; margin-top:8px; }
-  .score-preview { background:var(--card-bg); border:1px solid var(--glass-border); border-radius:16px; padding:24px; margin-bottom:16px; }
+  .score-preview { background:var(--card-bg); border:1px solid var(--glass-border); border-radius:16px; padding:24px; margin-bottom:24px; }
   .score-preview-title { font-family:'Syne',sans-serif; font-size:14px; font-weight:700; color:var(--text-muted); text-transform:uppercase; letter-spacing:1px; margin-bottom:16px; }
   .overall-score-big { display:flex; align-items:center; justify-content:center; gap:20px; flex-wrap:wrap; }
   .score-circle { width:100px; height:100px; border-radius:50%; background:linear-gradient(135deg,var(--blue-electric),var(--purple-bright)); display:flex; align-items:center; justify-content:center; flex-direction:column; box-shadow:0 0 40px rgba(108,53,222,0.4); }
@@ -146,6 +112,7 @@ const styles = `
   .score-mini { text-align:center; }
   .score-mini-val { font-family:'Syne',sans-serif; font-size:22px; font-weight:800; color:var(--purple-light); }
   .score-mini-label { font-size:11px; color:var(--text-muted); }
+  footer { text-align:center; padding:28px; color:var(--text-muted); font-size:13px; border-top:1px solid rgba(108,53,222,0.1); }
 `
 
 const ScoreBar = ({ value }) => (
@@ -164,32 +131,9 @@ export default function AppMain({ session, onSignOut, onAuthRequired }) {
   const [loading, setLoading] = useState(false)
   const [result, setResult] = useState(null)
   const [error, setError] = useState('')
-  const [earlyEmail, setEarlyEmail] = useState('')
-  const [claimed, setClaimed] = useState(() => {
-    if (typeof window !== 'undefined') return localStorage.getItem('uxify_claimed') === 'true'
-    return false
-  })
-  const [claimLoading, setClaimLoading] = useState(false)
   const fileRef = useRef()
 
   const userEmail = session?.user?.email || ''
-
-  const handleClaim = async () => {
-    if (!earlyEmail || !earlyEmail.includes('@')) return
-    setClaimLoading(true)
-    setTimeout(() => {
-      setClaimed(true)
-      localStorage.setItem('uxify_claimed', 'true')
-      setClaimLoading(false)
-    }, 1000)
-    try {
-      await fetch('/api/early-access', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ email: earlyEmail })
-      })
-    } catch(e) { console.error('Claim error:', e) }
-  }
 
   const handleFile = (f) => {
     if (!f || !f.type.startsWith('image/')) return
@@ -329,8 +273,7 @@ export default function AppMain({ session, onSignOut, onAuthRequired }) {
                 <button className="new-analysis-btn" onClick={reset}>← New Analysis</button>
               </div>
 
-              {/* Score preview - always visible */}
-              <div className="score-preview" style={{ marginBottom: 16 }}>
+              <div className="score-preview">
                 <div className="score-preview-title">Conversion Score</div>
                 <div className="overall-score-big">
                   <div className="score-circle">
@@ -353,104 +296,67 @@ export default function AppMain({ session, onSignOut, onAuthRequired }) {
                 </div>
               </div>
 
-              {/* Blurred paywall section */}
-              <div className="paywall-overlay">
-                <div className="blurred-section">
-                  <div className="summary-card">
-                    <div className="summary-title">AI Summary</div>
-                    <div className="summary-text">{result.summary}</div>
-                  </div>
-                  <div className="analysis-grid">
-                    <div className="analysis-card">
-                      <div className="card-title"><div className="card-icon pink">👁️</div>First Impression</div>
-                      {result.firstimpression?.map((item, i) => (
-                        <div key={i} className="issue-item"><div className={`issue-bullet ${severityColor(item.severity)}`} /><span>{item.text}</span></div>
-                      ))}
-                    </div>
-                    <div className="analysis-card">
-                      <div className="card-title"><div className="card-icon blue">🎯</div>CTA Analysis</div>
-                      {result.cta_analysis?.map((item, i) => (
-                        <div key={i} className="issue-item"><div className={`issue-bullet ${severityColor(item.severity)}`} /><span>{item.text}</span></div>
-                      ))}
-                    </div>
-                    <div className="analysis-card">
-                      <div className="card-title"><div className="card-icon green">🛡️</div>Trust Signals</div>
-                      {result.trust_signals?.map((item, i) => (
-                        <div key={i} className="issue-item"><div className={`issue-bullet ${severityColor(item.severity)}`} /><span>{item.text}</span></div>
-                      ))}
-                    </div>
-                    <div className="analysis-card">
-                      <div className="card-title"><div className="card-icon purple">✍️</div>Copy Analysis</div>
-                      {result.copy_analysis?.map((item, i) => (
-                        <div key={i} className="issue-item"><div className={`issue-bullet ${severityColor(item.severity)}`} /><span>{item.text}</span></div>
-                      ))}
-                    </div>
-                    <div className="analysis-card">
-                      <div className="card-title"><div className="card-icon pink">⚡</div>Quick Wins</div>
-                      {result.quick_wins?.map((r, i) => (
-                        <div className="rec-item" key={i}>
-                          <div className="rec-header"><span>{r.label}</span><span>{r.score}/100</span></div>
-                          <ScoreBar value={r.score} />
-                        </div>
-                      ))}
-                    </div>
-                    <div className="analysis-card">
-                      <div className="card-title"><div className="card-icon cyan">🎨</div>Color Palette</div>
-                      <div className="palette">
-                        {result.colors?.map((c, i) => (
-                          <div className="color-chip" key={i}>
-                            <div className="color-swatch" style={{ background: c.hex }} />
-                            <span className="color-hex">{c.hex}</span>
-                            <span style={{ fontSize: 11, color: 'var(--text-muted)' }}>{c.role}</span>
-                          </div>
-                        ))}
-                      </div>
-                    </div>
-                  </div>
-                </div>
+              <div className="summary-card">
+                <div className="summary-title">AI Summary</div>
+                <div className="summary-text">{result.summary}</div>
+              </div>
 
-                {/* Paywall */}
-                <div className="paywall-card">
-                  <div className="paywall-badge">🔥 Beta Launch — Limited Time</div>
-                  <div className="paywall-title">
-                    Unlock Your Full<br />
-                    <span className="highlight">Conversion Report</span>
-                  </div>
-                  <div className="paywall-sub">
-                    Get full access to your CTA analysis, trust signal audit, copy review, quick wins breakdown and detailed AI summary — at <strong>50% off lifetime</strong> before we launch publicly.
-                  </div>
-                  <div className="price-tag">
-                    <div>
-                      <div style={{ fontSize: 13, color: 'var(--text-muted)', marginBottom: 4 }}>Regular price</div>
-                      <div className="price-old">$20/mo</div>
-                    </div>
-                    <div style={{ fontSize: 28, color: 'var(--text-muted)' }}>→</div>
-                    <div>
-                      <div style={{ fontSize: 13, color: 'var(--accent-pink)', marginBottom: 4, fontWeight: 600 }}>Beta deal</div>
-                      <div className="price-new">$99</div>
-                      <div className="price-label">lifetime access</div>
-                    </div>
-                  </div>
-                  <div className="early-features">
-                    <div className="early-feature">Full conversion report</div>
-                    <div className="early-feature">Unlimited analyses</div>
-                    <div className="early-feature">All future features</div>
-                    <div className="early-feature">Priority support</div>
-                  </div>
-                  {!claimed ? (
-                    <>
-                      <div className="email-capture">
-                        <input className="email-input" type="email" placeholder="Enter your email to claim deal" value={earlyEmail} onChange={e => setEarlyEmail(e.target.value)} onKeyDown={e => e.key === 'Enter' && handleClaim()} />
-                        <button className="claim-btn" onClick={handleClaim} disabled={claimLoading}>
-                          {claimLoading ? '...' : '🔥 Claim 50% Off'}
-                        </button>
-                      </div>
-                      <div className="spots-left">⚡ <span>47 spots</span> remaining at this price</div>
-                    </>
-                  ) : (
-                    <div className="claimed-msg">🎉 You're on the early access list! We'll email you when payments go live with your 50% discount locked in.</div>
-                  )}
+              <div className="analysis-grid">
+                <div className="analysis-card">
+                  <div className="card-title"><div className="card-icon pink">👁️</div>First Impression</div>
+                  {result.firstimpression?.map((item, i) => (
+                    <div key={i} className="issue-item"><div className={`issue-bullet ${severityColor(item.severity)}`} /><span>{item.text}</span></div>
+                  ))}
                 </div>
+                <div className="analysis-card">
+                  <div className="card-title"><div className="card-icon blue">🎯</div>CTA Analysis</div>
+                  {result.cta_analysis?.map((item, i) => (
+                    <div key={i} className="issue-item"><div className={`issue-bullet ${severityColor(item.severity)}`} /><span>{item.text}</span></div>
+                  ))}
+                </div>
+                <div className="analysis-card">
+                  <div className="card-title"><div className="card-icon green">🛡️</div>Trust Signals</div>
+                  {result.trust_signals?.map((item, i) => (
+                    <div key={i} className="issue-item"><div className={`issue-bullet ${severityColor(item.severity)}`} /><span>{item.text}</span></div>
+                  ))}
+                </div>
+                <div className="analysis-card">
+                  <div className="card-title"><div className="card-icon purple">✍️</div>Copy Analysis</div>
+                  {result.copy_analysis?.map((item, i) => (
+                    <div key={i} className="issue-item"><div className={`issue-bullet ${severityColor(item.severity)}`} /><span>{item.text}</span></div>
+                  ))}
+                </div>
+                <div className="analysis-card">
+                  <div className="card-title"><div className="card-icon pink">⚡</div>Quick Wins</div>
+                  {result.quick_wins?.map((r, i) => (
+                    <div className="rec-item" key={i}>
+                      <div className="rec-header"><span>{r.label}</span><span>{r.score}/100</span></div>
+                      <ScoreBar value={r.score} />
+                    </div>
+                  ))}
+                </div>
+                <div className="analysis-card">
+                  <div className="card-title"><div className="card-icon cyan">🎨</div>Color Palette</div>
+                  <div className="palette">
+                    {result.colors?.map((c, i) => (
+                      <div className="color-chip" key={i}>
+                        <div className="color-swatch" style={{ background: c.hex }} />
+                        <span className="color-hex">{c.hex}</span>
+                        <span style={{ fontSize: 11, color: 'var(--text-muted)' }}>{c.role}</span>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              </div>
+
+              <div className="analysis-card">
+                <div className="card-title"><div className="card-icon green">🚀</div>Top Improvements</div>
+                {result.improvements?.map((item, i) => (
+                  <div key={i} className="issue-item">
+                    <span className={`priority-${item.priority}`}>{item.priority}</span>
+                    <span style={{ marginLeft: 8 }}>{item.text}</span>
+                  </div>
+                ))}
               </div>
             </div>
           )}
