@@ -388,6 +388,103 @@ function CountUp({ end, suffix = '' }) {
 
 const severityColor = (s) => s === 'error' ? 'red' : s === 'warning' ? 'yellow' : 'green'
 
+
+function CinematicLoader() {
+  const [step, setStep] = useState(0)
+  const [progress, setProgress] = useState(0)
+
+  const steps = [
+    'Capturing screenshot...',
+    'Reading your headline...',
+    'Analysing CTA strength...',
+    'Checking trust signals...',
+    'Scoring copy quality...',
+    'Generating report...',
+  ]
+
+  useEffect(() => {
+    const stepTimer = setInterval(() => {
+      setStep(s => s < steps.length - 1 ? s + 1 : s)
+    }, 900)
+    const progressTimer = setInterval(() => {
+      setProgress(p => p < 92 ? p + Math.random() * 8 : p)
+    }, 400)
+    return () => { clearInterval(stepTimer); clearInterval(progressTimer) }
+  }, [])
+
+  return (
+    <div style={{
+      position: 'fixed', inset: 0, background: '#0a0203', zIndex: 500,
+      display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center',
+      fontFamily: "'DM Sans', sans-serif"
+    }}>
+      {/* bg glow */}
+      <div style={{ position: 'absolute', inset: 0, background: 'radial-gradient(ellipse 60% 50% at 50% 50%, rgba(110,30,42,0.12) 0%, transparent 70%)', pointerEvents: 'none' }} />
+
+      {/* top line */}
+      <div style={{ position: 'absolute', top: 0, left: 0, height: '2px', background: 'linear-gradient(90deg,transparent,#6E1E2A,#c0303f,transparent)', width: `${progress}%`, transition: 'width 0.4s ease' }} />
+
+      {/* logo */}
+      <div style={{ fontFamily: "'Syne',sans-serif", fontSize: 20, fontWeight: 800, marginBottom: 64, opacity: 0.4, letterSpacing: -0.5 }}>
+        UX<span style={{ color: '#6E1E2A' }}>IFY</span>
+      </div>
+
+      {/* big scanning animation */}
+      <div style={{ position: 'relative', width: 120, height: 120, marginBottom: 48 }}>
+        {/* outer ring */}
+        <div style={{
+          position: 'absolute', inset: 0, borderRadius: '50%',
+          border: '1px solid rgba(110,30,42,0.2)',
+        }} />
+        {/* spinning arc */}
+        <div style={{
+          position: 'absolute', inset: 0, borderRadius: '50%',
+          border: '2px solid transparent',
+          borderTopColor: '#c0303f',
+          borderRightColor: 'rgba(110,30,42,0.4)',
+          animation: 'spin 1s linear infinite',
+        }} />
+        {/* inner pulse */}
+        <div style={{
+          position: 'absolute', inset: 16, borderRadius: '50%',
+          background: 'rgba(110,30,42,0.08)',
+          border: '1px solid rgba(110,30,42,0.15)',
+          animation: 'ux-pulse 1.5s ease infinite',
+        }} />
+        {/* center dot */}
+        <div style={{
+          position: 'absolute', inset: '50%', width: 8, height: 8,
+          transform: 'translate(-50%,-50%)',
+          borderRadius: '50%', background: '#c0303f',
+          boxShadow: '0 0 16px rgba(192,48,63,0.8)',
+          animation: 'ux-pulse 1s ease infinite',
+        }} />
+      </div>
+
+      {/* progress number */}
+      <div style={{ fontFamily: "'Syne',sans-serif", fontSize: 48, fontWeight: 800, letterSpacing: -2, marginBottom: 8, background: 'linear-gradient(135deg,#f5f0f0,#c0303f)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent' }}>
+        {Math.floor(progress)}%
+      </div>
+
+      {/* current step */}
+      <div style={{ fontSize: 14, color: '#8a8a8a', letterSpacing: 1, marginBottom: 48, minHeight: 24, transition: 'all 0.3s' }}>
+        {steps[step]}
+      </div>
+
+      {/* step dots */}
+      <div style={{ display: 'flex', gap: 8 }}>
+        {steps.map((_, i) => (
+          <div key={i} style={{
+            width: i === step ? 24 : 6, height: 6, borderRadius: 100,
+            background: i <= step ? '#6E1E2A' : 'rgba(181,183,185,0.1)',
+            transition: 'all 0.4s ease',
+          }} />
+        ))}
+      </div>
+    </div>
+  )
+}
+
 export default function AppMain({ session, onSignOut, onAuthRequired }) {
   const [tab, setTab] = useState('url')
   const [file, setFile] = useState(null)
@@ -649,14 +746,8 @@ export default function AppMain({ session, onSignOut, onAuthRequired }) {
           </div>
         )}
 
-        {/* LOADING */}
-        {loading && (
-          <div className="app-loading" style={{ paddingTop: 160 }}>
-            <div className="app-loader" />
-            <div className="app-loading-title">Analysing your landing page...</div>
-            <div className="app-loading-sub">Checking conversions, copy, CTAs and trust signals</div>
-          </div>
-        )}
+        {/* CINEMATIC LOADING */}
+        {loading && <CinematicLoader />}
 
         {/* CINEMATIC RESULTS */}
         {result && <CinematicReport result={result} onReset={reset} />}
