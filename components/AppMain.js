@@ -248,7 +248,7 @@ const problems = [
 ]
 
 const steps = [
-  { num: '01', title: 'Drop your URL', desc: 'Paste your landing page URL into UXIFY. No signup, no friction, no credit card. Just your URL.' },
+  { num: '01', title: 'Drop your URL', desc: 'Paste your landing page URL into UXIFY. No friction, no credit card. Just your URL.' },
   { num: '02', title: 'AI reads it like a human', desc: 'Our AI analyzes every element — headline, CTA, trust signals, and clarity — the way a conversion expert would.' },
   { num: '03', title: 'Get your score instantly', desc: 'Receive a detailed breakdown across 4 critical categories in under 30 seconds.' },
 ]
@@ -560,7 +560,7 @@ export default function AppMain({ session, onSignOut, onAuthRequired }) {
                 </div>
                 <div className="ux-stat">
                   <div className="ux-stat-num">Free</div>
-                  <div className="ux-stat-lbl">No signup. No credit card.</div>
+                  <div className="ux-stat-lbl">No credit card.</div>
                 </div>
               </div>
             </AnimatedSection>
