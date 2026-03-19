@@ -105,7 +105,7 @@ const reportStyles = `
 
   /* SECTION */
   .rpt-section { padding:100px 48px; max-width:1100px; margin:0 auto; }
-  .rpt-section-num { font-size:11px; letter-spacing:4px; color:rgba(110,30,42,0.5); text-transform:uppercase; margin-bottom:8px; }
+  .rpt-section-num { font-size:11px; letter-spacing:4px; color:rgba(192,48,63,0.8); text-transform:uppercase; margin-bottom:8px; }
   .rpt-section-title { font-family:'Syne',sans-serif; font-size:clamp(32px,4vw,56px); font-weight:800; letter-spacing:-2px; line-height:1.05; margin-bottom:48px; }
   .rpt-section-title span { color:#6E1E2A; }
 
