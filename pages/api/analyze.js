@@ -67,6 +67,40 @@ Respond ONLY with valid JSON in this exact structure:
 \`\`\`
 Scores are 0-100. Severity: "error", "warning", "pass". Priority: "high", "medium", "low". Be specific and actionable.`
 
+async function takeScreenshot(url) {
+  // Method 1: Browserless (primary - real Chrome, handles JS/SPA/WordPress perfectly)
+  try {
+    const res = await fetch(`https://chrome.browserless.io/screenshot?token=${process.env.BROWSERLESS_KEY}`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        url,
+        options: { fullPage: false, type: 'jpeg', quality: 80 },
+        viewport: { width: 1280, height: 960 },
+        gotoOptions: { waitUntil: 'networkidle2', timeout: 15000 }
+      })
+    })
+    if (res.ok) {
+      const buffer = await res.arrayBuffer()
+      const base64 = Buffer.from(buffer).toString('base64')
+      if (base64.length > 1000) return { base64, mediaType: 'image/jpeg' }
+    }
+  } catch (e) { console.error('Browserless failed:', e.message) }
+
+  // Method 2: WordPress mshots (fallback for simple sites)
+  try {
+    const res = await fetch(`https://s.wordpress.com/mshots/v1/${encodeURIComponent(url)}?w=1280&h=960`)
+    if (res.ok) {
+      const buffer = await res.arrayBuffer()
+      const base64 = Buffer.from(buffer).toString('base64')
+      if (base64.length > 5000) return { base64, mediaType: 'image/png' }
+    }
+  } catch (e) { console.error('WordPress mshots failed:', e.message) }
+
+  // Method 3: No screenshot - fall back to text only analysis
+  return null
+}
+
 export default async function handler(req, res) {
   if (req.method !== 'POST') return res.status(405).json({ error: 'Method not allowed' })
 
@@ -87,22 +121,16 @@ export default async function handler(req, res) {
         { type: 'text', text: PROMPT }
       ]
     } else if (type === 'url' && url) {
-      let screenshotBase64 = null
-      try {
-        const imgRes = await fetch(`https://s.wordpress.com/mshots/v1/${encodeURIComponent(url)}?w=1280&h=960`)
-        if (imgRes.ok) {
-          const buffer = await imgRes.arrayBuffer()
-          screenshotBase64 = Buffer.from(buffer).toString('base64')
-        }
-      } catch (e) {}
+      const screenshot = await takeScreenshot(url)
 
-      if (screenshotBase64) {
+      if (screenshot) {
         userContent = [
-          { type: 'image_url', image_url: { url: `data:image/png;base64,${screenshotBase64}` } },
+          { type: 'image_url', image_url: { url: `data:${screenshot.mediaType};base64,${screenshot.base64}` } },
           { type: 'text', text: `Landing page URL: ${url}\n\n${PROMPT}` }
         ]
       } else {
-        userContent = [{ type: 'text', text: `Analyze landing page: ${url}\n\n${PROMPT}` }]
+        // Text-only fallback — still works, just without visual analysis
+        userContent = [{ type: 'text', text: `Analyze this landing page URL and provide conversion feedback based on the URL and any knowledge you have about this site: ${url}\n\n${PROMPT}` }]
       }
     } else {
       return res.status(400).json({ error: 'Invalid request.' })
