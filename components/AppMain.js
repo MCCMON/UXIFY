@@ -1,4 +1,5 @@
 import { useEffect, useRef, useState } from 'react'
+import CinematicReport from './CinematicReport'
 import { supabase } from '../lib/supabase'
 
 const styles = `
@@ -248,7 +249,7 @@ const problems = [
 ]
 
 const steps = [
-  { num: '01', title: 'Drop your URL', desc: 'Paste your landing page URL into UXIFY. No friction, no credit card. Just your URL.' },
+  { num: '01', title: 'Drop your URL', desc: 'Paste your landing page URL into UXIFY. No signup, no friction, no credit card. Just your URL.' },
   { num: '02', title: 'AI reads it like a human', desc: 'Our AI analyzes every element — headline, CTA, trust signals, and clarity — the way a conversion expert would.' },
   { num: '03', title: 'Get your score instantly', desc: 'Receive a detailed breakdown across 4 critical categories in under 30 seconds.' },
 ]
@@ -560,7 +561,7 @@ export default function AppMain({ session, onSignOut, onAuthRequired }) {
                 </div>
                 <div className="ux-stat">
                   <div className="ux-stat-num">Free</div>
-                  <div className="ux-stat-lbl">No credit card.</div>
+                  <div className="ux-stat-lbl">No signup. No credit card.</div>
                 </div>
               </div>
             </AnimatedSection>
@@ -657,101 +658,8 @@ export default function AppMain({ session, onSignOut, onAuthRequired }) {
           </div>
         )}
 
-        {/* RESULTS */}
-        {result && (
-          <div className="app-results">
-            <div className="app-results-header">
-              <div className="app-results-title">✦ Landing Page Report</div>
-              <button className="app-new-btn" onClick={reset}>← New Analysis</button>
-            </div>
-
-            <div className="app-score-box">
-              <div className="app-score-box-title">Conversion Score</div>
-              <div className="app-score-main">
-                <div className="app-score-circle">
-                  <div className="app-score-circle-val">{result.scores?.overall}</div>
-                  <div className="app-score-circle-lbl">/ 100</div>
-                </div>
-                <div className="app-score-breakdown">
-                  {[
-                    { label: 'Headline', val: result.scores?.headline },
-                    { label: 'CTA', val: result.scores?.cta },
-                    { label: 'Trust', val: result.scores?.trust },
-                    { label: 'Clarity', val: result.scores?.clarity },
-                  ].map((s, i) => (
-                    <div key={i} className="app-score-mini">
-                      <div className="app-score-mini-val">{s.val}</div>
-                      <div className="app-score-mini-lbl">{s.label}</div>
-                    </div>
-                  ))}
-                </div>
-              </div>
-            </div>
-
-            <div className="app-summary">
-              <div className="app-summary-title">AI Summary</div>
-              <div className="app-summary-text">{result.summary}</div>
-            </div>
-
-            <div className="app-grid">
-              <div className="app-card">
-                <div className="app-card-title"><div className="app-card-icon" style={{ background: 'rgba(110,30,42,0.2)' }}>👁️</div>First Impression</div>
-                {result.firstimpression?.map((item, i) => (
-                  <div key={i} className="app-issue"><div className={`app-bullet ${severityColor(item.severity)}`} /><span>{item.text}</span></div>
-                ))}
-              </div>
-              <div className="app-card">
-                <div className="app-card-title"><div className="app-card-icon" style={{ background: 'rgba(110,30,42,0.15)' }}>🎯</div>CTA Analysis</div>
-                {result.cta_analysis?.map((item, i) => (
-                  <div key={i} className="app-issue"><div className={`app-bullet ${severityColor(item.severity)}`} /><span>{item.text}</span></div>
-                ))}
-              </div>
-              <div className="app-card">
-                <div className="app-card-title"><div className="app-card-icon" style={{ background: 'rgba(74,222,128,0.1)' }}>🛡️</div>Trust Signals</div>
-                {result.trust_signals?.map((item, i) => (
-                  <div key={i} className="app-issue"><div className={`app-bullet ${severityColor(item.severity)}`} /><span>{item.text}</span></div>
-                ))}
-              </div>
-              <div className="app-card">
-                <div className="app-card-title"><div className="app-card-icon" style={{ background: 'rgba(110,30,42,0.12)' }}>✍️</div>Copy Analysis</div>
-                {result.copy_analysis?.map((item, i) => (
-                  <div key={i} className="app-issue"><div className={`app-bullet ${severityColor(item.severity)}`} /><span>{item.text}</span></div>
-                ))}
-              </div>
-              <div className="app-card">
-                <div className="app-card-title"><div className="app-card-icon" style={{ background: 'rgba(110,30,42,0.2)' }}>⚡</div>Quick Wins</div>
-                {result.quick_wins?.map((r, i) => (
-                  <div className="app-rec-item" key={i}>
-                    <div className="app-rec-header"><span>{r.label}</span><span>{r.score}/100</span></div>
-                    <div className="app-bar-bg"><div className="app-bar-fill" style={{ width: `${r.score}%` }} /></div>
-                  </div>
-                ))}
-              </div>
-              <div className="app-card">
-                <div className="app-card-title"><div className="app-card-icon" style={{ background: 'rgba(56,189,248,0.1)' }}>🎨</div>Color Palette</div>
-                <div className="app-palette">
-                  {result.colors?.map((c, i) => (
-                    <div className="app-color-chip" key={i}>
-                      <div className="app-color-swatch" style={{ background: c.hex }} />
-                      <span className="app-color-hex">{c.hex}</span>
-                      <span style={{ fontSize: 11, color: '#8a8a8a' }}>{c.role}</span>
-                    </div>
-                  ))}
-                </div>
-              </div>
-            </div>
-
-            <div className="app-card">
-              <div className="app-card-title"><div className="app-card-icon" style={{ background: 'rgba(74,222,128,0.1)' }}>🚀</div>Top Improvements</div>
-              {result.improvements?.map((item, i) => (
-                <div key={i} className="app-issue">
-                  <span className={`app-priority-${item.priority}`}>{item.priority}</span>
-                  <span>{item.text}</span>
-                </div>
-              ))}
-            </div>
-          </div>
-        )}
+        {/* CINEMATIC RESULTS */}
+        {result && <CinematicReport result={result} onReset={reset} />}
 
         {/* FOOTER */}
         <div className="ux-footer">
