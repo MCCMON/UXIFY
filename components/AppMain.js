@@ -711,7 +711,8 @@ export default function AppMain({ session, onSignOut, onAuthRequired }) {
                 {url.trim() && (
                   <div className="app-preview">
                     <div className="app-preview-bar"><span className="app-live-dot" /> Live screenshot captured automatically</div>
-                    <img src={`https://s.wordpress.com/mshots/v1/${encodeURIComponent(url)}?w=1280&h=960`} style={{ width: '100%', display: 'block' }} alt="Preview" />
+                    <img src={`https://api.microlink.io/?url=${encodeURIComponent(url)}&screenshot=true&meta=false&embed=screenshot.url`}
+ style={{ width: '100%', display: 'block' }} alt="Preview" />
                   </div>
                 )}
               </div>
