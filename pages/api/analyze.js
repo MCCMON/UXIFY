@@ -74,7 +74,7 @@ async function takeScreenshot(url) {
     if (res.ok) {
       const buffer = await res.arrayBuffer()
       const base64 = Buffer.from(buffer).toString('base64')
-      if (base64.length > 5000) return { base64, mediaType: 'image/png' }
+      if (base64.length > 50000) return { base64, mediaType: 'image/png' }
     }
   } catch (e) { console.error('WordPress mshots failed:', e.message) }
 
