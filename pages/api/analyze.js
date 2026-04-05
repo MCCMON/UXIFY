@@ -2,7 +2,7 @@ import { createClient } from '@supabase/supabase-js'
 
 const supabaseAdmin = createClient(
   process.env.NEXT_PUBLIC_SUPABASE_URL,
-  process.env.SUPABASE_SERVICE_ROLE_KEY // Need this for admin access
+  process.env.SUPABASE_SERVICE_ROLE_KEY
 )
 
 const supabase = createClient(
@@ -14,7 +14,7 @@ export const config = {
   api: { bodyParser: { sizeLimit: '10mb' } }
 }
 
-const FREE_LIMIT = 3 // Free users get 3 analyses per month
+const FREE_LIMIT = 3
 
 const PROMPT = `You are an expert conversion rate optimization (CRO) specialist and landing page analyst. Analyze this landing page thoroughly and critically.
 
@@ -58,4 +58,22 @@ Respond ONLY with valid JSON in this exact structure:
   },
   "colors": [
     {"hex": "#1a1a2e", "role": "Background"},
-    {"hex": "#3d5af<span class="ml-2" /><span class="inline-block w-3 h-3 rounded-full bg-neutral-a12 align-middle mb-[0.1rem]" />
+    {"hex": "#3d5af1", "role": "Primary CTA"},
+    {"hex": "#f0f0f0", "role": "Text"},
+    {"hex": "#22d3ee", "role": "Accent"},
+    {"hex": "#e879f9", "role": "Highlight"}
+  ],
+  "quick_wins": [
+    {"label": "Headline Clarity", "score": 70},
+    {"label": "CTA Visibility", "score": 65},
+    {"label": "Social Proof", "score": 55},
+    {"label": "Value Proposition", "score": 75},
+    {"label": "Mobile Experience", "score": 68}
+  ]
+}
+\`\`\`
+Scores are 0-100. Severity: "error", "warning", "pass". Priority: "high", "medium", "low". Be specific and actionable.`
+
+async function takeScreenshot(url) {
+  try {
+    const res = await fetch(`https://s.wordpress.com/mshots/v1/${encodeURIComponent(url)}?w=1280<span class="ml-2" /><span class="inline-block w-3 h-3 rounded-full bg-neutral-a12 align-middle mb-[0.1rem]" />
